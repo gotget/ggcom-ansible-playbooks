@@ -1,6 +1,6 @@
 ---
 #
-# Ansible playbook: install Linuxbrew v201503180648
+# Ansible playbook: install Linuxbrew v201503180724
 # Louis T. Getterman IV (@LTGIV)
 # www.GotGetLLC.com / www.opensour.cc/ggcom/ansible/playbooks/linuxbrew
 #
@@ -59,7 +59,7 @@
        when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS'
 
      - name: Running Linuxbrew installer
-       shell: 'ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"'
+       shell: 'cat <(echo "") | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"'
        args:
          creates: '~/.linuxbrew/'
        sudo_user: '{{ user }}'
@@ -67,7 +67,7 @@
      - debug: var=retout.stdout_lines
 
 # other choice is ~/.profile?
-     - name: Load Linuxbrew automatically
+     - name: Load Linuxbrew automatically in ~/.bash_profile
        lineinfile: >
         dest='~/.bash_profile'
         line='{{ item }}'

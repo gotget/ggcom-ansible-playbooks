@@ -1,6 +1,6 @@
 ---
 #
-# Ansible playbook: install pyenv v201503180409
+# Ansible playbook: install pyenv v201503180724
 # Louis T. Getterman IV (@LTGIV)
 # www.GotGetLLC.com / www.opensour.cc/ggcom/ansible/playbooks/pyenv
 #
@@ -59,10 +59,9 @@
        sudo_user: '{{ user }}'
        register: retout
      - debug: var=retout.stdout_lines
-# WHEN DIRECTORY DOESN'T EXIST
 
 # other choice is ~/.profile?
-     - name: Load pyenv automatically
+     - name: Load pyenv automatically in ~/.bash_profile
        lineinfile: >
         dest='~/.bash_profile'
         line='{{ item }}'

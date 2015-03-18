@@ -1,6 +1,6 @@
 ---
 #
-# Ansible playbook: install nvm v201503180423
+# Ansible playbook: install nvm v201503180724
 # Louis T. Getterman IV (@LTGIV)
 # www.GotGetLLC.com / www.opensour.cc/ggcom/ansible/playbooks/nvm
 #
@@ -33,10 +33,9 @@
        sudo_user: '{{ user }}'
        register: retout
      - debug: var=retout.stdout_lines
-# WHEN DIRECTORY DOESN'T EXIST
 
 # other choice is ~/.profile?
-     - name: Load nvm automatically
+     - name: Load nvm automatically in ~/.bash_profile
        lineinfile: >
         dest='~/.bash_profile'
         line='{{ item }}'
