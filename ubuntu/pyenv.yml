@@ -1,0 +1,76 @@
+---
+#
+# Ansible playbook: install pyenv v201503180409
+# Louis T. Getterman IV (@LTGIV)
+# www.GotGetLLC.com / www.opensour.cc/ggcom/ansible/playbooks/pyenv
+#
+# Example Usage:
+# [user@host ~$] ansible-playbook ~/ggcom/ggcom-ansible-playbooks/pyenv.yml --extra-vars 'target=nameFromHostsFile user=nameOfUserUsingPyenv'
+# 
+# See available versions for installing:
+# [user@host ~$] pyenv install --list
+#
+# Setup a temporary directory using 1 of 2 methods (some VPS don't allow /tmp which mktemp tends to use)
+# [user@host ~$] export TMPDIR=`mktemp -d 2>/dev/null || mktemp -d -t 'dfwu'`
+# [user@host ~$] mkdir -pv "$HOME/tmp"; export TMPDIR="$HOME/tmp";
+#
+# Install a Python version (most common choices are latest Python 2 or Python 3):
+# (the following version number is the most recent for Python 2 at the time of this file being pushed to GitHub)
+# [user@host ~$] pyenv install 2.7.9
+#
+# Create Python virtual environment 
+# [user@host ~$] pyenv virtualenv 2.7.9 my-virtual-env-Py2
+#
+# Setup virtual environment as global (or local)
+# [user@host ~$] pyenv global my-virtual-env-Py2
+
+# TODO: ACTION (DEFAULT IS INSTALL, BUT SHOULD ALSO HAVE UPDATE (pyenv update) AND REMOVE (rm -fr ~/.pyenv))
+# TODO: ADD THE YUM VERSION FOR RHEL/CENTOS; AND PULL THIS OUT OF UBUNTU SPECIFC DIRECTORY
+
+- hosts: '{{ target }}'
+  sudo: yes
+
+  tasks:
+
+     - name: Install pyenv prerequisites
+       apt: >
+        update_cache=yes
+        pkg={{ item }}
+        state=installed
+       with_items:
+         - curl
+         - git-core
+         - gcc
+         - make
+         - zlib1g-dev
+         - libbz2-dev
+         - libreadline-dev
+         - libsqlite3-dev
+         - libssl-dev
+# Needed for 2.7, but not 2.7.9
+#         - build-essential
+#         - wget
+#         - llvm
+
+     - name: Running pyenv-installer by Yamashita, Yuu
+       shell: 'curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash'
+       args:
+         creates: '~/.pyenv/'
+       sudo_user: '{{ user }}'
+       register: retout
+     - debug: var=retout.stdout_lines
+# WHEN DIRECTORY DOESN'T EXIST
+
+# other choice is ~/.profile?
+     - name: Load pyenv automatically
+       lineinfile: >
+        dest='~/.bash_profile'
+        line='{{ item }}'
+        create=yes
+        state=present
+       with_items:
+         - '# pyenv functionality (installed by ggcom-ansible-playbooks/ubuntu/pyenv.yml)'
+         - 'export PATH="$HOME/.pyenv/bin:$PATH"'
+         - 'eval "$(pyenv init -)"'
+         - 'eval "$(pyenv virtualenv-init -)"'
+       sudo_user: '{{ user }}'
