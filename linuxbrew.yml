@@ -100,6 +100,8 @@
        file: >
         path='{{ lbil.stdout }}'
         state=absent
+       tags:
+         - yolo
 
 # other choice is ~/.profile?
      - name: Load Linuxbrew automatically in ~/.bash_profile
