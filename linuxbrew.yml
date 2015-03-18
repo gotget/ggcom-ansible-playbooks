@@ -111,7 +111,7 @@
         create=yes
         state=present
        with_items:
-         - '# Linuxbrew functionality (installed by ggcom-ansible-playbooks/ubuntu/linuxbrew.yml)'
+         - '# Linuxbrew functionality (installed by ggcom-ansible-playbooks/linuxbrew.yml)'
          - 'export PATH="$HOME/.linuxbrew/bin:$PATH"'
        sudo_user: '{{ user }}'
        tags:
