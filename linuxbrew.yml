@@ -6,6 +6,9 @@
 #
 # Example Usage:
 # [user@host ~$] ansible-playbook ~/ggcom/ggcom-ansible-playbooks/linuxbrew.yml --extra-vars 'target=nameFromHostsFile user=nameOfUserUsingPyenv'
+#
+# Skip the prerequisites and go straight for the meat and potatoes:
+# [user@host ~$] ansible-playbook ~/ggcom/ggcom-ansible-playbooks/linuxbrew.yml --extra-vars 'target=nameFromHostsFile user=nameOfUserUsingPyenv' --tags yolo
 
 # TODO: ACTION (DEFAULT IS INSTALL, BUT SHOULD ALSO HAVE UPDATE AND REMOVE)
 
@@ -34,9 +37,7 @@
        when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
      - name: Install Development Tools for Red Hat or CentOS
-       action: >
-        shell
-        sudo yum -y groupinstall 'Development Tools'
+       shell: "sudo yum -y groupinstall 'Development Tools'"
        when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS'
 
      - name: Install Linuxbrew prerequisites for Red Hat or CentOS
@@ -58,13 +59,47 @@
          - zlib-devel
        when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS'
 
+     - name: Create temporary directory inside of user
+       file: >
+        path='~{{ user }}/tmp'
+        state=directory
+       sudo_user: '{{ user }}'
+       tags:
+         - yolo
+
+     - name: Creating launchpad for Linuxbrew installer
+       shell: "mktemp ~{{ user }}/tmp/linuxbrew.XXXXXXXX"
+       register: lbil
+       sudo_user: '{{ user }}'
+       tags:
+         - yolo
+
+     - name: Build launchpad
+       lineinfile: >
+        dest='{{ lbil.stdout }}'
+        line='cat <(echo "") | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"'
+        state=present
+       sudo_user: '{{ user }}'
+       tags:
+         - yolo
+
      - name: Running Linuxbrew installer
-       shell: 'cat <(echo "") | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"'
+       shell: 'bash {{ lbil.stdout }}'
        args:
          creates: '~/.linuxbrew/'
        sudo_user: '{{ user }}'
        register: retout
+       tags:
+         - yolo
+
      - debug: var=retout.stdout_lines
+       tags:
+         - yolo
+
+     - name: Demolishing launchpad
+       file: >
+        name='{{ lbil.stdout }}'
+        state=absent
 
 # other choice is ~/.profile?
      - name: Load Linuxbrew automatically in ~/.bash_profile
@@ -77,3 +112,5 @@
          - '# Linuxbrew functionality (installed by ggcom-ansible-playbooks/ubuntu/linuxbrew.yml)'
          - 'export PATH="$HOME/.linuxbrew/bin:$PATH"'
        sudo_user: '{{ user }}'
+       tags:
+         - yolo
