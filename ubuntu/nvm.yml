@@ -1,0 +1,48 @@
+---
+#
+# Ansible playbook: install nvm v201503180423
+# Louis T. Getterman IV (@LTGIV)
+# www.GotGetLLC.com / www.opensour.cc/ggcom/ansible/playbooks/nvm
+#
+# Example Usage:
+# [user@host ~$] ansible-playbook ~/ggcom/ggcom-ansible-playbooks/ubuntu/nvm.yml --extra-vars 'target=nameFromHostsFile user=nameOfUserUsingNvm'
+
+# TODO: ACTION (DEFAULT IS INSTALL, BUT SHOULD ALSO HAVE UPDATE AND REMOVE)
+# TODO: ADD THE YUM VERSION FOR RHEL/CENTOS; AND PULL THIS OUT OF UBUNTU SPECIFC DIRECTORY
+
+- hosts: '{{ target }}'
+  sudo: yes
+
+  tasks:
+
+     - name: Install nvm prerequisites
+       apt: >
+        update_cache=yes
+        pkg={{ item }}
+        state=installed
+       with_items:
+         - build-essential
+         - libssl-dev
+         - curl
+         - git-core
+
+     - name: Running nvm-installer
+       shell: 'curl https://raw.githubusercontent.com/creationix/nvm/v0.23.3/install.sh | bash'
+       args:
+         creates: '~/.nvm/'
+       sudo_user: '{{ user }}'
+       register: retout
+     - debug: var=retout.stdout_lines
+# WHEN DIRECTORY DOESN'T EXIST
+
+# other choice is ~/.profile?
+     - name: Load nvm automatically
+       lineinfile: >
+        dest='~/.bash_profile'
+        line='{{ item }}'
+        create=yes
+        state=present
+       with_items:
+         - '# nvm functionality (installed by ggcom-ansible-playbooks/ubuntu/pyenv.yml)'
+         - 'source ~/.nvm/nvm.sh'
+       sudo_user: '{{ user }}'
