@@ -1,0 +1,45 @@
+---
+#
+# Ansible playbook: install Webmin v201503180416
+# Louis T. Getterman IV (@LTGIV)
+# www.GotGetLLC.com / www.opensour.cc/ggcom/ansible/playbooks/webmin
+#
+# Example Usage:
+# [user@host ~$] ansible-playbook ~/ggcom/ggcom-ansible-playbooks/ubuntu/webmin.yml --extra-vars 'target=nameFromHostsFile'
+
+# TODO: ACTION (DEFAULT IS INSTALL, BUT SHOULD ALSO HAVE REMOVE)
+# TODO: ADD THE YUM VERSION FOR RHEL/CENTOS; AND PULL THIS OUT OF UBUNTU SPECIFC DIRECTORY
+
+- hosts: '{{ target }}'
+  sudo: yes
+
+  tasks:
+
+     - name: Add Webmin repositories
+       apt_repository: >
+        repo='{{ item }}'
+        state=present
+       with_items:
+         - 'deb http://download.webmin.com/download/repository sarge contrib'
+         - 'deb http://webmin.mirror.somersettechsolutions.co.uk/repository sarge contrib'
+
+     - name: Add Webmin key
+       apt_key: >
+        url='http://www.webmin.com/jcameron-key.asc'
+        state=present
+
+     - name: Install Webmin and prerequisites
+       apt: >
+        update_cache=yes
+        pkg={{ item }}
+        state=installed
+       with_items:
+         - perl
+         - libnet-ssleay-perl
+         - openssl
+         - libauthen-pam-perl
+         - libpam-runtime
+         - libio-pty-perl
+         - apt-show-versions
+         - python
+         - webmin
