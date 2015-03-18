@@ -6,6 +6,9 @@
 #
 # Example Usage:
 # [user@host ~$] ansible-playbook ~/ggcom/ggcom-ansible-playbooks/ubuntu/nvm.yml --extra-vars 'target=nameFromHostsFile user=nameOfUserUsingNvm'
+#
+# Skip the prerequisites and go straight for the meat and potatoes:
+# [user@host ~$] ansible-playbook ~/ggcom/ggcom-ansible-playbooks/ubuntu/nvm.yml --extra-vars 'target=nameFromHostsFile user=nameOfUserUsingNvm' --tags skipprereq
 
 # TODO: ACTION (DEFAULT IS INSTALL, BUT SHOULD ALSO HAVE UPDATE AND REMOVE)
 # TODO: ADD THE YUM VERSION FOR RHEL/CENTOS; AND PULL THIS OUT OF UBUNTU SPECIFC DIRECTORY
@@ -32,7 +35,12 @@
          creates: '~/.nvm/'
        sudo_user: '{{ user }}'
        register: retout
+       tags:
+         - skipprereq
+
      - debug: var=retout.stdout_lines
+       tags:
+         - skipprereq
 
 # other choice is ~/.profile?
      - name: Load nvm automatically in ~/.bash_profile
@@ -45,3 +53,5 @@
          - '# nvm functionality (installed by ggcom-ansible-playbooks/ubuntu/pyenv.yml)'
          - 'source ~/.nvm/nvm.sh'
        sudo_user: '{{ user }}'
+       tags:
+         - skipprereq

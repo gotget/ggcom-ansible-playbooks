@@ -6,6 +6,9 @@
 #
 # Example Usage:
 # [user@host ~$] ansible-playbook ~/ggcom/ggcom-ansible-playbooks/ubuntu/pyenv.yml --extra-vars 'target=nameFromHostsFile user=nameOfUserUsingPyenv'
+#
+# Skip the prerequisites and go straight for the meat and potatoes:
+# [user@host ~$] ansible-playbook ~/ggcom/ggcom-ansible-playbooks/ubuntu/pyenv.yml --extra-vars 'target=nameFromHostsFile user=nameOfUserUsingPyenv' --tags skipprereq
 # 
 # See available versions for installing:
 # [user@host ~$] pyenv install --list
@@ -58,7 +61,12 @@
          creates: '~/.pyenv/'
        sudo_user: '{{ user }}'
        register: retout
+       tags:
+         - skipprereq
+
      - debug: var=retout.stdout_lines
+       tags:
+         - skipprereq
 
 # other choice is ~/.profile?
      - name: Load pyenv automatically in ~/.bash_profile
@@ -73,3 +81,5 @@
          - 'eval "$(pyenv init -)"'
          - 'eval "$(pyenv virtualenv-init -)"'
        sudo_user: '{{ user }}'
+       tags:
+         - skipprereq
