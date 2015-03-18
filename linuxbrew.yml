@@ -1,0 +1,79 @@
+---
+#
+# Ansible playbook: install Linuxbrew v201503180648
+# Louis T. Getterman IV (@LTGIV)
+# www.GotGetLLC.com / www.opensour.cc/ggcom/ansible/playbooks/linuxbrew
+#
+# Example Usage:
+# [user@host ~$] ansible-playbook ~/ggcom/ggcom-ansible-playbooks/linuxbrew.yml --extra-vars 'target=nameFromHostsFile user=nameOfUserUsingPyenv'
+
+# TODO: ACTION (DEFAULT IS INSTALL, BUT SHOULD ALSO HAVE UPDATE AND REMOVE)
+
+- hosts: '{{ target }}'
+  sudo: yes
+
+  tasks:
+
+     - name: Install Linuxbrew prerequisites for Debian or Ubuntu
+       apt: >
+        update_cache=yes
+        pkg={{ item }}
+        state=installed
+       with_items:
+         - build-essential
+         - curl
+         - git
+         - m4
+         - ruby
+         - texinfo
+         - libbz2-dev
+         - libcurl4-openssl-dev
+         - libexpat-dev
+         - libncurses-dev
+         - zlib1g-dev
+       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+     - name: Install Development Tools for Red Hat or CentOS
+       action: >
+        shell
+        sudo yum -y groupinstall 'Development Tools'
+       when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS'
+
+     - name: Install Linuxbrew prerequisites for Red Hat or CentOS
+       yum: >
+        update_cache=yes
+        pkg={{ item }}
+        state=present
+       with_items:
+         - curl
+         - git
+         - irb
+         - m4
+         - ruby
+         - texinfo
+         - bzip2-devel
+         - curl-devel
+         - expat-devel
+         - ncurses-devel
+         - zlib-devel
+       when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS'
+
+     - name: Running Linuxbrew installer
+       shell: 'ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)"'
+       args:
+         creates: '~/.linuxbrew/'
+       sudo_user: '{{ user }}'
+       register: retout
+     - debug: var=retout.stdout_lines
+
+# other choice is ~/.profile?
+     - name: Load Linuxbrew automatically
+       lineinfile: >
+        dest='~/.bash_profile'
+        line='{{ item }}'
+        create=yes
+        state=present
+       with_items:
+         - '# Linuxbrew functionality (installed by ggcom-ansible-playbooks/ubuntu/linuxbrew.yml)'
+         - 'export PATH="$HOME/.linuxbrew/bin:$PATH"'
+       sudo_user: '{{ user }}'
