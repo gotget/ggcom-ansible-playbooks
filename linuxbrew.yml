@@ -98,7 +98,7 @@
 
      - name: Demolishing launchpad
        file: >
-        name='{{ lbil.stdout }}'
+        path='{{ lbil.stdout }}'
         state=absent
 
 # other choice is ~/.profile?
