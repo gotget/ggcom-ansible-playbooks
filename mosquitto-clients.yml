@@ -1,0 +1,56 @@
+---
+#
+# Ansible playbook: install Mosquitto Clients v201503190029
+# Louis T. Getterman IV (@LTGIV)
+# www.GotGetLLC.com / www.opensour.cc/ggcom/ansible/playbooks/mosquitto-clients
+#
+# Example Usage:
+# [user@host ~$] ansible-playbook ~/ggcom/ggcom-ansible-playbooks/mosquitto-clients.yml --extra-vars 'target=nameFromHostsFile'
+#
+# Thanks:
+# http://mosquitto.org/2013/01/mosquitto-debian-repository/
+
+- hosts: '{{ target }}'
+  sudo: yes
+
+  tasks:
+
+#---------- Add repository to system
+#----- Debian
+     - name: Add Mosquitto repository for Debian
+       apt_repository: >
+        repo='{{ item }}'
+        state=present
+       with_items:
+         - 'http://repo.mosquitto.org/debian/mosquitto-{{ ansible_lsb.codename }}.list'
+       when: ansible_distribution == 'Debian'
+#-----/Debian
+
+#----- Ubuntu
+     - name: Add Mosquitto repository for Ubuntu
+       apt_repository: >
+        repo='{{ item }}'
+        state=present
+       with_items:
+         - 'ppa:mosquitto-dev/mosquitto-ppa'
+       when: ansible_distribution == 'Ubuntu'
+#-----/Ubuntu
+#----------/Add repository to system
+
+#---------- Add repository's key to system
+     - name: Add Mosquitto key
+       apt_key: >
+        url='http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key'
+        state=present
+#----------/Add repository's key to system
+
+#---------- Install Mosquitto Client and Python Module
+     - name: Install Mosquitto Clients, and API
+       apt: >
+        update_cache=yes
+        pkg={{ item }}
+        state=installed
+       with_items:
+         - mosquitto-clients
+         - python-mosquitto
+#----------/Install Mosquitto Client and Python Module
