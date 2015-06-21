@@ -28,14 +28,22 @@
 # [user@host ~$] pyenv global my-virtual-env-Py2
 
 # TODO: ACTION (DEFAULT IS INSTALL, BUT SHOULD ALSO HAVE UPDATE (pyenv update) AND REMOVE (rm -fr ~/.pyenv))
-# TODO: ADD THE YUM VERSION FOR RHEL/CENTOS; AND PULL THIS OUT OF UBUNTU SPECIFC DIRECTORY
+# TODO: ADDITIONAL SHELL/PROFILE SUPPORT INSTEAD OF DEFAULTING TO ~/.bash_profile
+
+# Thanks:
+#
+# pyenv install for CentOS 6.5 x86_64
+# https://gist.github.com/ysaotome/7956676
 
 - hosts: '{{ target }}'
   sudo: yes
 
   tasks:
 
-     - name: Install pyenv prerequisites
+#---------- Install prerequisites
+
+#----- Debian or Ubuntu
+     - name: Install pyenv prerequisites for Debian or Ubuntu
        apt: >
         update_cache=yes
         pkg={{ item }}
@@ -50,10 +58,34 @@
          - libreadline-dev
          - libsqlite3-dev
          - libssl-dev
+       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 # Needed for 2.7, but not 2.7.9
 #         - build-essential
 #         - wget
 #         - llvm
+#----- Debian or Ubuntu
+
+#----- CentOS
+     - name: Install pyenv prerequisites for Red Hat or CentOS
+       yum: >
+        update_cache=yes
+        pkg={{ item }}
+        state=present
+       with_items:
+         - gcc
+         - gcc-c++
+         - make
+         - git
+         - patch
+         - openssl-devel
+         - zlib-devel
+         - readline-devel
+         - sqlite-devel
+         - bzip2-devel
+       when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS'
+#-----/CentOS
+
+#----------/Install prerequisites
 
      - name: Running pyenv-installer by Yamashita, Yuu
        shell: 'curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash'

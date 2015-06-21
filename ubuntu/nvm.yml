@@ -50,7 +50,7 @@
         create=yes
         state=present
        with_items:
-         - '# nvm functionality (installed by ggcom-ansible-playbooks/ubuntu/pyenv.yml)'
+         - '# nvm functionality (installed by ggcom-ansible-playbooks/ubuntu/nvm.yml)'
          - 'source ~/.nvm/nvm.sh'
        sudo_user: '{{ user }}'
        tags:
