@@ -117,6 +117,12 @@
        tags:
          - skipprereq
 
+     - name: Reloading ~/.bash_profile
+       shell: 'source ~/.bash_profile'
+       sudo_user: '{{ user }}'
+       tags:
+         - skipprereq
+
 #        args:
 #          creates: '~/.linuxbrew/'
      - name: Running Linuxbrew Doctor
