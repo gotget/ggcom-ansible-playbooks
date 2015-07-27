@@ -1,6 +1,6 @@
 ---
 #
-# Ansible playbook: install pyenv v201503180724
+# Ansible playbook: install pyenv v201506210608
 # Louis T. Getterman IV (@LTGIV)
 # www.GotGetLLC.com / www.opensour.cc/ggcom/ansible/playbooks/pyenv
 #
@@ -26,14 +26,14 @@
 #
 # Setup virtual environment as global (or local)
 # [user@host ~$] pyenv global my-virtual-env-Py2
-
-# TODO: ACTION (DEFAULT IS INSTALL, BUT SHOULD ALSO HAVE UPDATE (pyenv update) AND REMOVE (rm -fr ~/.pyenv))
-# TODO: ADDITIONAL SHELL/PROFILE SUPPORT INSTEAD OF DEFAULTING TO ~/.bash_profile
-
+#
 # Thanks:
 #
 # pyenv install for CentOS 6.5 x86_64
 # https://gist.github.com/ysaotome/7956676
+#
+# TODO: ACTION (DEFAULT IS INSTALL, BUT SHOULD ALSO HAVE UPDATE (pyenv update) AND REMOVE (rm -fr ~/.pyenv))
+# TODO: ADDITIONAL SHELL/PROFILE SUPPORT INSTEAD OF DEFAULTING TO ~/.bash_profile
 
 - hosts: '{{ target }}'
   sudo: yes

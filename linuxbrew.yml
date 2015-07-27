@@ -38,7 +38,7 @@
 
      - name: Install Development Tools for Red Hat or CentOS
        shell: "sudo yum -y groupinstall 'Development Tools'"
-       when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS'
+       when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS' or ansible_distribution == 'SHMZ'
 
      - name: Install Linuxbrew prerequisites for Red Hat or CentOS
        yum: >
@@ -57,7 +57,7 @@
          - expat-devel
          - ncurses-devel
          - zlib-devel
-       when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS'
+       when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS' or ansible_distribution == 'SHMZ'
 
      - name: Create temporary directory inside of user
        file: >
@@ -114,5 +114,18 @@
          - '# Linuxbrew functionality (installed by ggcom-ansible-playbooks/linuxbrew.yml)'
          - 'export PATH="$HOME/.linuxbrew/bin:$PATH"'
        sudo_user: '{{ user }}'
+       tags:
+         - skipprereq
+
+#        args:
+#          creates: '~/.linuxbrew/'
+     - name: Running Linuxbrew Doctor
+       shell: 'brew doctor'
+       sudo_user: '{{ user }}'
+       register: retout
+       tags:
+         - skipprereq
+
+     - debug: var=retout.stdout_lines
        tags:
          - skipprereq
