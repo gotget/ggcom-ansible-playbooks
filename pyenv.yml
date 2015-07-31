@@ -66,23 +66,27 @@
 #----- Debian or Ubuntu
 
 #----- CentOS
+     - name: Install Development Tools for Red Hat or CentOS
+       shell: "sudo yum -y groupinstall 'Development Tools'"
+       when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS' or ansible_distribution == 'SHMZ'
+
      - name: Install pyenv prerequisites for Red Hat or CentOS
        yum: >
         update_cache=yes
         pkg={{ item }}
         state=present
        with_items:
+         - bzip2-devel
          - gcc
          - gcc-c++
-         - make
          - git
-         - patch
+         - make
          - openssl-devel
-         - zlib-devel
+         - patch
          - readline-devel
          - sqlite-devel
-         - bzip2-devel
-       when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS'
+         - zlib-devel
+       when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS' or ansible_distribution == 'SHMZ'
 #-----/CentOS
 
 #----------/Install prerequisites
