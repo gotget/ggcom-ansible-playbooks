@@ -12,5 +12,5 @@ Usage instructions are in the top of each of the playbook YML files, and online 
 Install:
 
 mkdir -pv ~/ggcom/
-git clone %%https://github.com/LTGIV/ggcom-ansible-playbooks.git%% ~/ggcom/ggcom-ansible-playbooks/
+git clone https://github.com/LTGIV/ggcom-ansible-playbooks.git ~/ggcom/ggcom-ansible-playbooks/
 ```
