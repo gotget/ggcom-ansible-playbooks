@@ -119,3 +119,20 @@
        sudo_user: '{{ user }}'
        tags:
          - skipprereq
+
+     - name: Reloading ~/.bash_profile
+       shell: 'source ~/.bash_profile'
+       sudo_user: '{{ user }}'
+       tags:
+         - skipprereq
+
+     - name: Listing current Python versions (system should show up)
+       shell: 'pyenv versions'
+       sudo_user: '{{ user }}'
+       register: retout
+       tags:
+         - skipprereq
+
+     - debug: var=retout.stdout_lines
+       tags:
+         - skipprereq

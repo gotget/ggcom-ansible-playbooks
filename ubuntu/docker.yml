@@ -1,0 +1,17 @@
+# https://www.opensour.cc/os/virtualization/docker/start
+# https://www.opensour.cc/os/virtualization/docker/install/ubuntu
+#
+# http://www.ansible.com/2014/02/12/installing-and-building-docker-with-ansible
+#
+# Install Ansible Ubuntu role using either:
+#
+# git clone https://github.com/angstwad/docker.ubuntu.git
+# ansible-galaxy install angstwad.docker_ubuntu
+
+---
+
+- hosts: '{{ target }}'
+  sudo: yes
+
+  roles:
+     - angstwad.docker_ubuntu
