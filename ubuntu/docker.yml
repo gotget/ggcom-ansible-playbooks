@@ -7,11 +7,15 @@
 #
 # git clone https://github.com/angstwad/docker.ubuntu.git
 # ansible-galaxy install angstwad.docker_ubuntu
+#
+# Run:
+# ansible-playbook docker.yml --extra-vars='target=SERVER'
 
 ---
 
 - hosts: '{{ target }}'
-  sudo: yes
+  become: yes
+  become_user: root
 
   roles:
      - angstwad.docker_ubuntu
